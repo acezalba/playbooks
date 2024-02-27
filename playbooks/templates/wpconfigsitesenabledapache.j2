@@ -1,0 +1,17 @@
+<VirtualHost *:80>
+    ServerAdmin hello@{{ project_url }}
+    ServerName {{ project_url }}
+    ServerAlias www.{{ project_url }}
+    DocumentRoot {{ project_path.path }}
+
+    <Directory {{ project_path.path }}>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog /var/log/apache2/{{ project_url }}error.log
+    CustomLog /var/log/apache2/{{ project_url }}access.log combined
+</VirtualHost>
+
