@@ -1,0 +1,127 @@
+---
+- name: Provision a Wordpress Local Development using wp-cli and mariadb
+  hosts: localhost
+  connection: local
+  vars:
+    - mysql_host: local
+    - mysql_port: 3306
+  vars_prompt:
+    - name: project_name
+      prompt: "Enter the name of your project (use underscore for space, lowercase preferred): "
+    - name: root_password
+      prompt: "Enter the password for your root db account: "
+      private: yes
+    - name: wp_version
+      prompt: "Enter WordPress version (leave blank to use the latest): "
+      private: no
+
+  tasks:
+    # Common Role
+    - name: Pass datetimestamp for use
+      ansible.builtin.timestamp:
+        format: "%Y%m%d%H%M%S"
+      register: current_time
+
+    - name: Transform values for use
+      ansible.builtin.set_fact:
+        project_name_cleaned: {{ project_name | trim() | lower() }}
+        site_title: {{ project_name_cleaned | replace("_"," " | capitalize )}}
+        db_name: "{{ project_name_cleaned }}_{{ current_time }}"
+        db_user: "{{ project_name_cleaned }}_admin"
+        db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+        wp_user_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+
+    # DB Role
+    - name: Ping MariaDB server
+      mysql_ping:
+        login_user: "root"
+        login_password: "{{ root_password }}"
+        login_host: "{{ mysql_host }}"
+        login_port: "{{ mysql_port }}"
+      register: mariadb_ping_result
+
+    - name: Fail if MariaDB server is not reachable
+      fail:
+        msg: "Failed to connect to MariaDB server. Please check your connection settings."
+      when: mariadb_ping_result.failed
+
+    - name: Create a new database
+      mysql_db:
+        name: "{{ db_name }}"
+        state: present
+
+    - name: Create a new user
+      mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        priv: "{{ db_name }}.*:ALL"
+        state: present
+
+    - name: Grant all privileges on the new database to the user
+      mysql_user:
+        name: "{{ db_user }}"
+        priv: "{{ db_name }}.*:ALL"
+        state: present
+
+    - name: Flush all privileges to apply changes
+      mysql_db:
+        name: "*.*"
+        state: flush_privs
+
+    # WPCLI Role
+    - name: Check if WordPress is in PATH
+      ansible.builtin.command: "which wp"
+      register: wordpress_path
+      ignore_errors: true
+
+    - name: Display WordPress path if found
+      debug:
+        msg: "WordPress is installed at {{ wordpress_path.stdout }}"
+      when: wordpress_path.rc == 0
+
+    - name: Display message if WordPress is not found
+      debug:
+        msg: "WordPress is not installed or not in PATH"
+      when: wordpress_path.rc != 0
+
+    - name: Get the current working directory
+      ansible.builtin.command: pwd
+      register: cwd_result
+
+    - name: Create a folder in the current working directory
+      ansible.builtin.file:
+        path: "{{ cwd_result.stdout }}/{{ project_name_cleaned }}"
+        state: directory
+      register: folder_result
+
+    - name: Download WordPress core files
+      ansible.builtin.command: >
+        wp core download --path="{{ folder_result.path }}"
+        {% if wp_version is defined and wp_version != '' %}
+        --version="{{ wp_version }}"
+        {% endif %}
+      args:
+        chdir: "{{ cwd_result.stdout }}"
+
+    - name: Create the wp config file
+      ansible.builtin.command: >
+        wp config create --dbname={{ db_name }} --dbuser={{ db_user }} --dbpass={{ db_password }}
+      args:
+        chdir: "{{ folder_result.path }}"
+
+    - name: Create the wordpress database schema
+      ansible.builtin.command: wp db create
+
+    - name: Create the wordpress local development installation
+      ansible.builtin.command: > 
+      wp core install 
+        --url={{ project_name_cleaned | replace("_", "-") }}.test
+        --title="{{ site_title }}" 
+        --admin_user={{ project_name_cleaned }}_admin 
+        --admin_password={{ wp_user_password }}
+        --admin_email=hello@{{ project_name_cleaned | replace("_", "-") }}.test
+
+    - name: Run the wordpress local development server
+      ansible.builtin.command: wp server --port=9974 --docroot={{ folder_result.path }} 
+
+
