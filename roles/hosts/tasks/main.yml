@@ -1,0 +1,10 @@
+# LOCALHOST role
+- name: Add entry for project url to hosts file
+  become: true
+  become_method: sudo
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: |
+      127.0.0.1 {{ project_url }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK for {{ project_url }}"
+    create: yes
