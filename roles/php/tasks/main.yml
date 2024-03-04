@@ -1,0 +1,12 @@
+# Checks
+
+- name: Check if PHP is in PATH
+  ansible.builtin.command: "which php"
+  register: php_path
+  ignore_errors: true
+
+- name: Display message if PHP is not found
+  debug:
+    msg: "PHP is not installed or not in PATH"
+  when: php_path.rc != 0
+  ignore_errors: false
