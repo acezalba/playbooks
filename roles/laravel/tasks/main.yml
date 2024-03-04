@@ -1,0 +1,3 @@
+- name: Create a laravel local development install
+  ansible.builtin.command: >
+    composer create-project laravel/laravel {{ project_path.path }}
