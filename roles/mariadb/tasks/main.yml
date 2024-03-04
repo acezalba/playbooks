@@ -1,0 +1,54 @@
+---
+# DB Role
+- name: Transform credentials
+  ansible.builtin.set_fact:
+    db_name: "{{ project_name_cleaned }}_{{ datetime.stdout }}"
+    db_user: "{{ project_name_cleaned }}_dbadmin"
+    db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+  no_log: true
+
+- name: Check if ~/.my.cnf exists on localhost
+  ansible.builtin.stat:
+    path: ~/.my.cnf
+  register: my_cnf_stat
+
+- name: Fail if ~/.my.cnf does not exist
+  fail:
+    msg: |
+      It appears ~/.my.cnf does not exist on localhost. 
+      Configure the file first with the appropriate superuser credentials
+      for your database, then rerun the playbook.
+  when: not my_cnf_stat.stat.exists
+
+- name: Ping MariaDB server
+  wait_for:
+    port: "{{ mysql_port }}"
+    host: "{{ mysql_host }}"
+    timeout: 5  # Adjust timeout as needed
+  register: mariadb_ping_result
+
+- name: Fail if MariaDB server is not reachable
+  fail:
+    msg: "Failed to connect to MariaDB server. Please check your connection settings."
+  when: mariadb_ping_result.failed
+
+- name: Create a new database
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+
+- name: Create a new user
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+
+- name: Grant all privileges on the new database to the user
+  mysql_user:
+    name: "{{ db_user }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+
+- name: Flush privileges to apply changes
+  shell: "mysql --defaults-file=~/.my.cnf -e 'FLUSH PRIVILEGES;'"
