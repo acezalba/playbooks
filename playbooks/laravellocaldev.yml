@@ -1,0 +1,20 @@
+---
+- name: Provision a Laravel Local Development with Mariadb
+  hosts: localhost
+  connection: local
+  vars:
+    - mysql_host: local
+    - mysql_port: 3306
+  vars_prompt:
+    - name: project_name
+      prompt: "Enter the name of your project (use underscore for space, lowercase preferred)"
+      private: no
+  roles:
+    - common
+    - composer
+    - laravel
+    - mariadb
+    - apache
+    - hosts
+    - envfile
+
