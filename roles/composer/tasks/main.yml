@@ -1,0 +1,12 @@
+# Checks
+
+- name: Check if Composer is in PATH
+  ansible.builtin.command: "which composer"
+  register: composer_path
+  ignore_errors: true
+
+- name: Display message if Composer is not found
+  debug:
+    msg: "Composer is not installed or not in PATH"
+  when: composer_path.rc != 0
+  ignore_errors: false
