@@ -1,0 +1,16 @@
+# Apache2 role
+- name: Copy Apache configuration template to sites-available
+  become: true
+  become_method: sudo
+  ansible.builtin.template:
+    src: templates/apache-generic-template.j2
+    dest: "/etc/apache2/sites-available/{{ project_url }}.conf"
+  notify: Restart Apache
+
+- name: Create symlink to sites-enabled
+  become: true
+  become_method: sudo
+  ansible.builtin.file:
+    src: /etc/apache2/sites-available/{{ project_url }}.conf
+    dest: /etc/apache2/sites-enabled/{{ project_url }}.conf
+    state: link
