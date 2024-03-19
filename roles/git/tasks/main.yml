@@ -1,0 +1,30 @@
+---
+
+- name: Check if git is in PATH
+  ansible.builtin.command: "which git"
+  register: git_path
+  ignore_errors: true
+
+- name: Display message if git is not found
+  debug:
+    msg: "git is not installed or not in PATH"
+  when: git_path.rc != 0
+  ignore_errors: false
+
+- name: Initialize git in project folder
+  ansible.builtin.command: "git init {{ project_path.path }}"
+
+- name: Download the project gitignore
+  ansible.builtin.command: "npx gitignore {{ gitignore }}"
+  when: gitignore is defined
+  ignore_errors: true
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Download the project license
+  ansible.builtin.command: "npx license {{ license }}"
+  when: license is defined
+  ignore_errors: true
+  args:
+    chdir: "{{ project_path.path }}"
+
