@@ -5,6 +5,8 @@
   vars:
     - db_host: 127.0.0.1
     - db_port: 3306
+    - license: MIT
+    - gitignore: laravel
   vars_prompt:
     - name: project_name
       prompt: "Enter the name of your project (use underscore for space, lowercase preferred)"
@@ -12,10 +14,12 @@
   roles:
     - common
     - php
+    - npx
     - composer
     - mariadb
     - apache
     - hosts
     - laravel
     - envfile
+    - git
 
