@@ -16,7 +16,6 @@
   roles:
     - common
     - php
-    - npx
     - npm
     - composer
     - mariadb
