@@ -7,6 +7,8 @@
     - db_port: 3306
     - license: MIT
     - gitignore: laravel
+    - require_breeze: true
+    - breeze_ui: blade
   vars_prompt:
     - name: project_name
       prompt: "Enter the name of your project (use underscore for space, lowercase preferred)"
@@ -15,6 +17,7 @@
     - common
     - php
     - npx
+    - npm
     - composer
     - mariadb
     - apache
