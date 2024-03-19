@@ -1,0 +1,23 @@
+---
+
+- name: Check if npm is in PATH
+  ansible.builtin.command: "which npm"
+  register: npm_path
+  ignore_errors: true
+
+- name: Display message if npm is not found
+  debug:
+    msg: "npm is not installed or not in PATH"
+  when: npm_path.rc != 0
+  ignore_errors: false
+
+- name: Check if npx is in PATH
+  ansible.builtin.command: "which npx"
+  register: npx_path
+  ignore_errors: true
+
+- name: Display message if npx is not found
+  debug:
+    msg: "npx is not installed or not in PATH"
+  when: npx_path.rc != 0
+  ignore_errors: false
