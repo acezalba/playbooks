@@ -1,5 +1,4 @@
 ---
-# Common Role
 - name: Pass datetime for use on filename
   shell: "date +%Y%m%d%H%M%S"
   register: datetime
