@@ -3,18 +3,19 @@
   hosts: localhost
   connection: local
   vars:
-    - mysql_host: local
-    - mysql_port: 3306
+    - db_host: 127.0.0.1
+    - db_port: 3306
   vars_prompt:
     - name: project_name
       prompt: "Enter the name of your project (use underscore for space, lowercase preferred)"
       private: no
   roles:
     - common
+    - php
     - composer
-    - laravel
     - mariadb
     - apache
     - hosts
+    - laravel
     - envfile
 
