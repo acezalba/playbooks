@@ -1,3 +1,4 @@
+---
 # Checks
 
 - name: Check if PHP is in PATH

@@ -1,3 +1,4 @@
+---
 - name: Overwrite env file with project values
   become: true
   become_method: sudo

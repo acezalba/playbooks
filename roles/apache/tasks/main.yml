@@ -1,3 +1,4 @@
+---
 # Apache2 role
 - name: Copy Apache configuration template to sites-available
   become: true

@@ -1,5 +1,5 @@
+---
 # Checks
-
 - name: Check if Composer is in PATH
   ansible.builtin.command: "which composer"
   register: composer_path

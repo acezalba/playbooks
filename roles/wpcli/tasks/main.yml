@@ -1,0 +1,45 @@
+---
+# WPCLI Role
+- name: Check if WordPress is in PATH
+  ansible.builtin.command: "which wp"
+  register: wordpress_path
+  ignore_errors: true
+
+- name: Display WordPress path if found
+  debug:
+    msg: "WordPress is installed at {{ wordpress_path.stdout }}"
+  when: wordpress_path.rc == 0
+
+- name: Display message if WP-CLI is not found
+  debug:
+    msg: "WP-CLI is not installed or not in PATH"
+  when: wordpress_path.rc != 0
+
+- name: Download WordPress core files
+  ansible.builtin.command: >
+    wp core download 
+    --path="{{ project_path.path }}" 
+    {% if wp_version is defined and wp_version != '' %}
+    --version="{{ wp_version }}"
+    {% endif %}
+
+- name: Create the wp config file
+  ansible.builtin.command: >
+    wp config create --dbname={{ db_name }} --dbuser={{ db_user }} --dbpass={{ db_password }}
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Create the wordpress local development installation
+  ansible.builtin.command: >
+    wp core install 
+    --url="{{ project_url }}"
+    --title="{{ site_title }}"
+    --admin_user="{{ project_name_cleaned }}_admin"
+    --admin_password="{{ wp_user_password }}"
+    --admin_email="hello@{{ project_url }}"
+    --path="{{ project_path.path }}"
+
+- name: Pass project variable files to a text file
+  ansible.builtin.template:
+    src: templates/wpprojectconfig.j2
+    dest: "{{ project_path.path }}/projectconfig.txt"

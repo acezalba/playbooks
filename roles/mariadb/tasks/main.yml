@@ -37,7 +37,7 @@
   mysql_db:
     name: "{{ db_name }}"
     state: present
-
+---
 - name: Create a new user
   mysql_user:
     name: "{{ db_user }}"

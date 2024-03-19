@@ -1,3 +1,4 @@
+---
 # LOCALHOST role
 - name: Add entry for project url to hosts file
   become: true
