@@ -15,6 +15,43 @@
     src: templates/AppServiceProvider.php.j2
     dest: "{{ project_path.path }}/app/Providers/AppServiceProvider.php"
 
+# For laravel breeze
+- name: Require laravel:breeze
+  ansible.builtin.command: >
+    composer require laravel/breeze --dev
+  when: require_breeze
+  args:
+    chdir: {{ project_path.path }}
+
+- name: Setup Laravel Breeze
+  ansible.builtin.command: >
+    php artisan breeze:install {{ breeze_ui | default('blade') }}
+  when: require_breeze
+  args:
+    chdir: {{ project_path.path }}
+
+- name: Run npm in your project folder
+  ansible.builtin.command: >
+    npm install
+  when: require_breeze
+  args:
+    chdir: {{ project_path.path }}
+
+- name: Run npm dev in background
+  ansible.builtin.command: >
+    npm run dev&
+  when: require_breeze
+  args:
+    chdir: {{ project_path.path }}
+  debug:
+    msg: "Npm dev for {{ project_name_cleaned }}is now running as a background service."
+
 - name: Generate your app key for vite
+  when: require_breeze
   ansible.builtin.command: >
     php artisan key:generate
+
+- name: Migrate breeze auth scaffolding
+  when: require_breeze
+  ansible.builtin.command: >
+    php artisan migrate
