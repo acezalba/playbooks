@@ -2,3 +2,19 @@
 - name: Create a laravel local development install
   ansible.builtin.command: >
     composer create-project laravel/laravel {{ project_path.path }}
+
+# Only for local purposes. Might require an alternative task and/or rewrite when
+# loading app to staging/production
+- name: Force load app_url in config/app for php artisan serve
+  ansible.builtin.template:
+    src: templates/app.php.j2
+    dest: "{{ project_path.path }}/config/app.php"
+
+- name: Force load app.url in app boot for php artisan serve
+  ansible.builtin.template:
+    src: templates/AppServiceProvider.php.j2
+    dest: "{{ project_path.path }}/app/Providers/AppServiceProvider.php"
+
+- name: Generate your app key for vite
+  ansible.builtin.command: >
+    php artisan key:generate
