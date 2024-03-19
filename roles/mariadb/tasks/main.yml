@@ -23,8 +23,8 @@
 
 - name: Ping MariaDB server
   wait_for:
-    port: "{{ mysql_port }}"
-    host: "{{ mysql_host }}"
+    port: "{{ db_port }}"
+    host: "{{ db_host }}"
     timeout: 5  # Adjust timeout as needed
   register: mariadb_ping_result
 
