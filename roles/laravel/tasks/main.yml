@@ -36,12 +36,6 @@
   args:
     chdir: "{{ project_path.path }}"
 
-- name: Run npm dev in background
-  shell: "npm run dev&"
-  when: require_breeze
-  args:
-    chdir: "{{ project_path.path }}"
-
 - name: Generate your app key for vite
   when: require_breeze
   ansible.builtin.command: php artisan key:generate --show
