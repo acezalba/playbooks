@@ -3,6 +3,64 @@
   ansible.builtin.command: >
     composer create-project laravel/laravel {{ project_path.path }}
 
+- name: Let tasks know that laravel is used in the project
+  ansible.builtin.set_fact:
+    laravel_in_project: true
+
+# For laravel breeze
+- name: Require laravel:breeze
+  ansible.builtin.command: >
+    composer require laravel/breeze --dev
+  when: require_breeze
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Setup Laravel Breeze
+  ansible.builtin.command: >
+    php artisan breeze:install {{ breeze_ui | default('blade') }}
+  when: require_breeze
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Enable vite-related tasks
+  when: require_breeze
+  ansible.builtin.set_fact:
+    vite_enabled: true
+
+# TODO: Create a vite role, and plug config/env values in vite.config.js
+
+- name: Run npm in your project folder
+  ansible.builtin.command: >
+    npm install
+  when: require_breeze
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Run npm dev in background
+  shell: "npm run dev&"
+  when: require_breeze
+  args:
+    chdir: "{{ project_path.path }}"
+
+- name: Generate your app key for vite
+  when: require_breeze
+  ansible.builtin.command: php artisan key:generate --show
+  args:
+    chdir: "{{ project_path.path }}"
+  register: app_key_command
+  changed_when: app_key_command.rc == 0
+
+- set_fact:
+    app_key: "{{ app_key_command.stdout }}"
+  when: app_key_command.rc == 0
+
+- name: Migrate breeze auth scaffolding
+  when: require_breeze
+  ansible.builtin.command: >
+    php artisan migrate
+  args:
+    chdir: "{{ project_path.path }}"
+
 # Only for local purposes. Might require an alternative task and/or rewrite when
 # loading app to staging/production
 - name: Force load app_url in config/app for php artisan serve
@@ -14,44 +72,3 @@
   ansible.builtin.template:
     src: templates/AppServiceProvider.php.j2
     dest: "{{ project_path.path }}/app/Providers/AppServiceProvider.php"
-
-# For laravel breeze
-- name: Require laravel:breeze
-  ansible.builtin.command: >
-    composer require laravel/breeze --dev
-  when: require_breeze
-  args:
-    chdir: {{ project_path.path }}
-
-- name: Setup Laravel Breeze
-  ansible.builtin.command: >
-    php artisan breeze:install {{ breeze_ui | default('blade') }}
-  when: require_breeze
-  args:
-    chdir: {{ project_path.path }}
-
-- name: Run npm in your project folder
-  ansible.builtin.command: >
-    npm install
-  when: require_breeze
-  args:
-    chdir: {{ project_path.path }}
-
-- name: Run npm dev in background
-  ansible.builtin.command: >
-    npm run dev&
-  when: require_breeze
-  args:
-    chdir: {{ project_path.path }}
-  debug:
-    msg: "Npm dev for {{ project_name_cleaned }}is now running as a background service."
-
-- name: Generate your app key for vite
-  when: require_breeze
-  ansible.builtin.command: >
-    php artisan key:generate
-
-- name: Migrate breeze auth scaffolding
-  when: require_breeze
-  ansible.builtin.command: >
-    php artisan migrate
