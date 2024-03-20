@@ -2,3 +2,4 @@
 dependencies:
   - role: php
   - role: npm
+  - role: composer
