@@ -16,6 +16,10 @@
         ProxyPreserveHost On
         ProxyPass         http://{{ project_url }}:${{ apache2_port }}/
         ProxyPassReverse  http://{{ project_url }}:${{ apache2_port }}/
+    {% if vite_enabled %}
+        ProxyPass         /vite http://{{ project_url }}:${{ vite_port | default('5173')}}/
+        ProxyPassReverse  /vite http://{{ project_url }}:${{ vite_port | default('5173')}}/
+    {% endif %}
     </Location>
 
     ErrorLog /var/log/apache2/{{ project_url }}error.log
