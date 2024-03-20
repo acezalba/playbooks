@@ -1,12 +1,30 @@
 ---
-# Apache2 role
-- name: Copy Apache configuration template to sites-available
+- name: Check if Apache2 is running
+  set_fact:
+    apache2_running: "{{ 'apache2' in ansible_services }}"
+
+- name: Display message if Apache2 is not found
+  debug:
+    msg: "Apache2 is not running on your host. Check your services"
+  when: apache2_running
+  ignore_errors: false
+
+- name: Enable reverse proxy modules
+  become: true
+  become_method: sudo
+  community.general.apache2_module:
+    state: present
+    name: 
+      - mod_proxy
+      - mod_proxy_http
+  notify: Restart Apache2
+
+- name: Copy Apache2 configuration template to sites-available
   become: true
   become_method: sudo
   ansible.builtin.template:
     src: templates/apache-generic-template.j2
     dest: "/etc/apache2/sites-available/{{ project_url }}.conf"
-  notify: Restart Apache
 
 - name: Create symlink to sites-enabled
   become: true
@@ -15,3 +33,4 @@
     src: /etc/apache2/sites-available/{{ project_url }}.conf
     dest: /etc/apache2/sites-enabled/{{ project_url }}.conf
     state: link
+  notify: Restart Apache2

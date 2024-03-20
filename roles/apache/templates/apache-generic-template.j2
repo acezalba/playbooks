@@ -11,6 +11,13 @@
         allow from all
     </Directory>
 
+    ## Reverse proxy settings
+    <Location />
+        ProxyPreserveHost On
+        ProxyPass         http://{{ project_url }}:${{ apache2_port }}/
+        ProxyPassReverse  http://{{ project_url }}:${{ apache2_port }}/
+    </Location>
+
     ErrorLog /var/log/apache2/{{ project_url }}error.log
     CustomLog /var/log/apache2/{{ project_url }}access.log combined
 </VirtualHost>
