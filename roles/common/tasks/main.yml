@@ -1,9 +1,11 @@
 ---
 - name: Gather system facts
   ansible.builtin.gather_facts:
+  register: host_system_facts
 
 - name: Populate service facts
   ansible.builtin.service_facts:
+  register: host_services_facts
 
 - name: Pass datetime for use on filename
   shell: "date +%Y%m%d%H%M%S"
