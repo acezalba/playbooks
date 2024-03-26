@@ -57,3 +57,13 @@ VITE_PUSHER_HOST="${PUSHER_HOST}"
 VITE_PUSHER_PORT="${PUSHER_PORT}"
 VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
 VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+{% if require_proxypass %}
+PROXY_ACTIVE=true
+PROXY_PATH_HEADER=HTTP_X_FORWARDED_PATH
+# http or https: PUBLIC_SCHEMA_OVERRIDE=https
+PUBLIC_SCHEMA_OVERRIDE=
+# Example: PUBLIC_URL_OVERRIDE=http://some-other-domain.example.com/some-other-directory
+PUBLIC_URL_OVERRIDE=
+TRUSTED_PROXIES=192.168.1.10,{{ project_url }},192.168.3.12,{{ project_ipv4 }}
+{% endif %}
