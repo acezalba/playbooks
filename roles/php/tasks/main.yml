@@ -11,3 +11,8 @@
     msg: "PHP is not installed or not in PATH"
   when: php_path.rc != 0
   ignore_errors: false
+
+- name: Obtain PHP version
+  ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
+  register: php_vers
+  ignore_errors: true
