@@ -1,10 +1,9 @@
 ---
-# DB Role
 - name: Transform credentials
   ansible.builtin.set_fact:
     db_connection: "mysql"
-    db_name: "{{ project_name_cleaned }}_{{ datetime.stdout }}"
-    db_user: "{{ project_name_cleaned }}_dbadmin"
+    db_name: "{{ project_name_cleaned }}_{{ suffix_db | default(datetime.stdout | default('projdb')) }}"
+    db_user: "{{ project_name_cleaned }}_{{ suffix_user | default('dbadmin') }}"
     db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
   no_log: true
 
@@ -53,3 +52,11 @@
 
 - name: Flush privileges to apply changes
   shell: "mysql --defaults-file=~/.my.cnf -e 'FLUSH PRIVILEGES;'"
+
+- name: Let tasks know that mariadb is used in the project
+  ansible.builtin.set_fact:
+    mariadb_in_project: true
+
+- name: Let tasks know that sqlite is not used in the project
+  ansible.builtin.set_fact:
+    not_sqlite: true
