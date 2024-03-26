@@ -6,6 +6,6 @@
   ansible.builtin.blockinfile:
     path: /etc/hosts
     block: |
-      127.0.0.1 {{ project_url }}
+      {{ project_ipv4 | default('127.0.0.1')}} {{ project_url }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK for {{ project_url }}"
     create: yes
