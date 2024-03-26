@@ -2,6 +2,6 @@
 - name: Restart Apache2
   become: true
   become_method: sudo
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: apache2
     state: restarted

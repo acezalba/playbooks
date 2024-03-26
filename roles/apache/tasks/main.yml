@@ -9,15 +9,120 @@
   when: apache2_running
   ignore_errors: false
 
-- name: Enable reverse proxy modules
+- name: Change dev apache to current user
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "/etc/apache2/envvars"
+    regexp: '^export APACHE_RUN_USER='
+    line: 'export APACHE_RUN_USER={{ dev_user }}'
+  notify: Restart Apache2
+
+- name: Change dev apache to current group
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "/etc/apache2/envvars"
+    regexp: '^export APACHE_RUN_GROUP='
+    line: 'export APACHE_RUN_GROUP={{ dev_group }}'
+  notify: Restart Apache2
+
+- name: Disable proxy related modules
   become: true
   become_method: sudo
   community.general.apache2_module:
-    state: present
-    name: 
-      - mod_proxy
-      - mod_proxy_http
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "php{{ php_vers.stdout }}"
+    - mpm_prefork
   notify: Restart Apache2
+
+# SRC: https://github.com/jmferrer/ansible-apache2-reverse-proxy/blob/master/roles/apache-reverse-proxy/tasks/main.yml
+- name: Enable proxy related modules
+  become: true
+  become_method: sudo
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - alias
+    - ratelimit
+    - rewrite
+    - headers
+    - proxy_ajp
+    - proxy_balancer
+    - proxy_connect
+    - proxy_express
+    - proxy_ftp
+    - proxy_html
+    - proxy_http
+    - proxy_scgi
+    - proxy_wstunnel
+    - mpm_event
+    - ssl
+    - vhost_alias
+    - xml2enc
+    - proxy_fcgi
+  notify: Restart Apache2
+
+- name: Set permissions recursively for the log folder
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  file:
+    path: "/var/log/apache2"
+    state: directory
+    recurse: yes
+    owner: "{{ dev_user }}"
+    group: "{{ dev_group }}"
+    mode: "0775"
+
+- name: Set permissions recursively for the config folder
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  file:
+    path: "/etc/apache2"
+    state: directory
+    recurse: yes
+    owner: "{{ dev_user }}"
+    group: "{{ dev_group }}"
+    mode: "0775"
+
+- name: Set permissions recursively for the project folder
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  file:
+    path: "{{ public_project_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ dev_user }}"
+    group: "{{ dev_group }}"
+    mode: "0775"
+
+- name: Create symlink to project folder
+  become: true
+  become_method: sudo
+  ansible.builtin.file:
+    src: "{{ public_project_path }}"
+    dest: "{{ symlink_project_path }}"
+    state: link
+  notify: Restart Apache2
+
+- name: Set permissions for the symlink
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  file:
+    path: "{{ symlink_project_path }}"
+    owner: "{{ dev_user }}"
+    group: "{{ dev_group }}"
+    mode: "0775"
+    follow: no
 
 - name: Copy Apache2 configuration template to sites-available
   become: true
