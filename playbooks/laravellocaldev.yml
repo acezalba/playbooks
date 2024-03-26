@@ -1,28 +1,36 @@
 ---
-- name: Provision a Laravel Local Development with Mariadb
+# on execution, overwrite project_name with
+#
+# ansible-playbook my_playbook.yml --extra-vars "project_name=my_project_name"
+# 
+# Project name is transformed across multiple tasks, 
+# so you need to change this to your preference.
+# Underscore as separator preferred.
+
+- name: Provision a Laravel Local Development with Mariadb, Apache, and PHP-FPM
   hosts: localhost
   connection: local
   vars:
-    - apache2_port: 8000
-    - db_host: 127.0.0.1
-    - db_port: 3306
+    - project_name: laravel_setup_test
     - license: MIT
     - gitignore: laravel
     - require_breeze: true
     - breeze_ui: blade
-  vars_prompt:
-    - name: project_name
-      prompt: "Enter the name of your project (use underscore for space, lowercase preferred)"
-      private: no
+    - dev_user: ghost
+    - dev_group: ghost
+    # suffix_db must be alphanumeric
+    - suffix_db: laravel
+    # suffix_user must be alphanumeric
+    - suffix_user: dbadmin
   roles:
     - common
     - php
+    - php-fpm
     - npm
     - composer
-    - laravel
     - mariadb
-    - hosts
-    - envfile
+    - laravel
     - git
     - apache
+    - hosts
 
