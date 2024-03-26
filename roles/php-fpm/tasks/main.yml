@@ -1,0 +1,77 @@
+---
+- name: Pass php-version to php-fpm service name
+  ansible.builtin.set_fact:
+    php_fpm_service: "php{{ php_vers.stdout }}-fpm"
+
+# Check if php-fpm is available in the system.
+- name: Check if php-fpm runs on host
+  become: true
+  become_method: sudo
+  ansible.builtin.systemd:
+    name: "{{ php_fpm_service }}"
+    state: started
+    enabled: yes
+  register: php_fpm_check
+  ignore_errors: yes 
+
+- name: Reload if php-fpm is stopped
+  when: 
+    - php_fpm_check.state == 'stopped'
+  ansible.builtin.systemd:
+    name: "{{ php_fpm_service }}"
+    state: reloaded
+    enabled: yes
+  ignore_errors: yes
+
+- name: Setup error_message in case php_fpm returns an error
+  when: php_fpm_service.stderr is defined
+  ansible.builtin.set_fact:
+    error_messages_not_found:
+      error_msg: "php-fpm service not found. Please install it first." 
+    error_messages_start_failed:
+      error_msg: "Unable to start php-fpm service. Check if there are configuration errors or other issues preventing it from starting."
+    selected_errors: "{{ lookup('vars', 'error_messages_' + ( 'not found' in php_fpm_check.stderr | ternary('not_found', 'start_failed') ) ) }}" 
+
+- name: Fail if php_fpm returns an error
+  when: php_fpm_check is failed
+  debug:
+    msg: "{{ selected_errors.error_msg }}"
+  ignore_errors: no
+
+- name: Transform php_fpm_www_conf for use
+  ansible.builtin.set_fact:
+    php_fpm_www_conf: "/etc/php/{{ php_vers.stdout }}/fpm/pool.d/www.conf"
+
+# overwrite php-fpm config with current user.
+- name: Change dev php-fpm to current user
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^user ='
+    line: 'user = {{ dev_user }}'
+  notify: Restart php-fpm
+
+- name: Change dev php-fpm to current group
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^group ='
+    line: 'group = {{ dev_group }}'
+  notify: Restart php-fpm
+
+- name: Change listen port to localhost:9000
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^listen ='
+    line: 'listen = 127.0.0.1:9000'
+  notify: Restart php-fpm
+
+- name: Let tasks know that php_fpm is used in the project
+  ansible.builtin.set_fact:
+    php_fpm_in_project: true
