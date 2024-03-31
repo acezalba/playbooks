@@ -14,10 +14,14 @@
 - name: Initialize git in project folder
   ansible.builtin.command: "git init {{ project_path.path }}"
 
+# Gitignore command might be particular with the lettercase.
+# It also does not return a proper fail response.
+# If you have to debug this, you may want to check the case spellings
+# of gitignores at https://github.com/github/gitignore
 - name: Download the project gitignore
   ansible.builtin.command: "npx gitignore {{ gitignore }}"
   when: gitignore is defined
-  ignore_errors: true
+  ignore_errors: false
   args:
     chdir: "{{ project_path.path }}"
 
