@@ -7,29 +7,26 @@
 # so you need to change this to your preference.
 # Underscore as separator preferred.
 
-- name: Provision a Laravel Local Development with Mariadb, Apache, and PHP-FPM
+- name: Provision a wordpress instance with wp-cli, mariadb, and apache2
   hosts: localhost
   connection: local
   vars:
-    - project_name: laravel_setup_test
+    - project_name: wpcli_setup
     - license: MIT
-    - gitignore: laravel
-    - require_breeze: false
-    - breeze_ui: blade
+    - gitignore: WordPress
     - dev_user: ghost
     - dev_group: ghost
     # suffix_db must be alphanumeric
-    - suffix_db: laravel
+    - suffix_db: wp2342
     # suffix_user must be alphanumeric
-    - suffix_user: dbadmin
+    - suffix_user: dbacnt
   roles:
     - common
     - php
     - php-fpm
     - npm
-    - composer
     - mariadb
-    - laravel
+    - wp-cli
     - git
     - apache
     - hosts
