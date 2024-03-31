@@ -1,4 +1,5 @@
 ---
+# TODO: Add no cache directives when connection is local
 - name: Check if Apache2 is running
   set_fact:
     apache2_running: "{{ 'apache2' in host_services_facts }}"
