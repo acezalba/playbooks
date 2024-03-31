@@ -1,0 +1,64 @@
+---
+# https://make.wordpress.org/cli/handbook/
+# TODO: Incorporate use of the config.yml
+# https://make.wordpress.org/cli/handbook/references/config/
+- name: Check if WordPress is in PATH
+  ansible.builtin.command: "which wp"
+  register: wpcli_path
+  ignore_errors: true
+
+- name: Display WordPress path if found
+  debug:
+    msg: "WP-CLI is installed at {{ wpcli_path.stdout }}"
+  when: wpcli_path.rc == 0
+
+- name: Display message if WP-CLI is not found
+  debug:
+    msg: "WP-CLI is not installed or not in PATH"
+  when: wpcli_path.rc != 0
+
+- name: Download WordPress core files
+  ansible.builtin.command: >
+    wp core download 
+    --path="{{ project_path.path }}" 
+    {% if wp_version is defined and wp_version != '' %}
+    --version="{{ wp_version }}"
+    {% endif %}
+
+- name: Create the wp config file
+  ansible.builtin.command: >
+    wp config create --dbname={{ db_name }} --dbuser={{ db_user }} --dbpass={{ db_password }}
+  args:
+    chdir: "{{ project_path.path }}"
+  no_log: true
+
+- name: Generate the wp user password
+  ansible.builtin.set_fact:
+    wp_user_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+
+- name: Create the wordpress local development installation
+  ansible.builtin.command: >
+    wp core install 
+    --url="{{ project_url }}"
+    --title="{{ site_title }}"
+    --admin_user="{{ project_name_cleaned }}_admin"
+    --admin_password="{{ wp_user_password }}"
+    --admin_email="hello@{{ project_url }}"
+    --path="{{ project_path.path }}"
+  no_log: true
+
+- name: Pass project variable files to a text file
+  when: ansible_connection == 'local'
+  ansible.builtin.template:
+    src: templates/wpprojectconfig.j2
+    dest: "{{ project_path.path }}/projectconfig.txt"
+
+- name: Set directory loaded by the server application
+  when: public_project_path is undefined
+  ansible.builtin.set_fact:
+    public_project_path: "{{ project_path.path }}"
+
+- name: Set directory to symlink the project to
+  when: symlink_project_path is undefined
+  ansible.builtin.set_fact:
+    symlink_project_path: "/var/www/html/{{ project_url }}"
