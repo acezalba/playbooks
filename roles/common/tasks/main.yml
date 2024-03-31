@@ -30,13 +30,3 @@
     path: "{{ current_path }}/{{ project_name_cleaned }}"
     state: directory
   register: project_path
-
-- name: Set directory loaded by the server application
-  when: public_project_path is undefined
-  ansible.builtin.set_fact:
-    public_project_path: "{{ project_path.path }}/public"
-
-- name: Set directory to symlink the project to
-  when: symlink_project_path is undefined
-  ansible.builtin.set_fact:
-    symlink_project_path: "/var/www/html/{{ project_url }}"
