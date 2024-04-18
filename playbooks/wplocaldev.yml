@@ -11,15 +11,15 @@
   hosts: localhost
   connection: local
   vars:
-    - project_name: wpcli_setup
-    - license: MIT
-    - gitignore: WordPress
-    - dev_user: ghost
-    - dev_group: ghost
+    project_name: wpcli_setup
+    license: MIT
+    gitignore: WordPress
+    dev_user: ghost
+    dev_group: ghost
     # suffix_db must be alphanumeric
-    - suffix_db: wp2342
+    suffix_db: wp2342
     # suffix_user must be alphanumeric
-    - suffix_user: dbacnt
+    suffix_user: dbacnt
   roles:
     - common
     - php

@@ -11,17 +11,17 @@
   hosts: localhost
   connection: local
   vars:
-    - project_name: laravel_setup_test
-    - license: MIT
-    - gitignore: laravel
-    - require_breeze: false
-    - breeze_ui: blade
-    - dev_user: ghost
-    - dev_group: ghost
+    project_name: laravel_setup_test
+    license: MIT
+    gitignore: laravel
+    require_breeze: false
+    breeze_ui: blade
+    dev_user: ghost
+    dev_group: ghost
     # suffix_db must be alphanumeric
-    - suffix_db: laravel
+    suffix_db: laravel
     # suffix_user must be alphanumeric
-    - suffix_user: dbadmin
+    suffix_user: dbadmin
   roles:
     - common
     - php
