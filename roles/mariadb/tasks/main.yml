@@ -7,18 +7,21 @@
     db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
   no_log: true
 
-- name: Check if ~/.my.cnf exists on localhost
-  ansible.builtin.stat:
-    path: ~/.my.cnf
-  register: my_cnf_stat
+# Starting from Mariadb 10.4, you only need to execute as root user without password
+# Authentication is now via unix socket.
+# TODO: Add check to see if Mariadb is less than 10.4, then enable this if so.
+# - name: Check if ~/.my.cnf exists on localhost
+#   ansible.builtin.stat:
+#     path: ~/.my.cnf
+#   register: my_cnf_stat
 
-- name: Fail if ~/.my.cnf does not exist
-  fail:
-    msg: |
-      It appears ~/.my.cnf does not exist on localhost. 
-      Configure the file first with the appropriate superuser credentials
-      for your database, then rerun the playbook.
-  when: not my_cnf_stat.stat.exists
+# - name: Fail if ~/.my.cnf does not exist
+#   fail:
+#     msg: |
+#       It appears ~/.my.cnf does not exist on localhost. 
+#       Configure the file first with the appropriate superuser credentials
+#       for your database, then rerun the playbook.
+#   when: not my_cnf_stat.stat.exists
 
 - name: Ping MariaDB server
   wait_for:
@@ -51,7 +54,7 @@
     state: present
 
 - name: Flush privileges to apply changes
-  shell: "mysql --defaults-file=~/.my.cnf -e 'FLUSH PRIVILEGES;'"
+  shell: "mysql -e 'FLUSH PRIVILEGES;'"
 
 - name: Let tasks know that mariadb is used in the project
   ansible.builtin.set_fact:
