@@ -63,6 +63,26 @@
     line: 'group = {{ dev_group }}'
   notify: Restart php-fpm
 
+- name: Change listen user of dev php-fpm to current user
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^listen.owner ='
+    line: 'listen.owner = {{ dev_user }}'
+  notify: Restart php-fpm
+
+- name: Change listen group of dev php-fpm to current group
+  when: ansible_connection == 'local'
+  become: true
+  become_method: sudo
+  lineinfile:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^listen.group ='
+    line: 'listen.group = {{ dev_group }}'
+  notify: Restart php-fpm
+
 - name: Change listen port to localhost:9000
   become: true
   become_method: sudo
