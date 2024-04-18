@@ -2,20 +2,36 @@
 # https://make.wordpress.org/cli/handbook/
 # TODO: Incorporate use of the config.yml
 # https://make.wordpress.org/cli/handbook/references/config/
-- name: Check if WordPress is in PATH
+
+- name: Check if wp is in PATH
   ansible.builtin.command: "which wp"
-  register: wpcli_path
+  register: wp_path
   ignore_errors: true
 
-- name: Display WordPress path if found
-  debug:
-    msg: "WP-CLI is installed at {{ wpcli_path.stdout }}"
-  when: wpcli_path.rc == 0
+- name: Trigger installation instructions if wp not found
+  when: wp_path.rc != 0
+  ansible.builtin.set_fact:
+    install_wp: true
 
-- name: Display message if WP-CLI is not found
-  debug:
-    msg: "WP-CLI is not installed or not in PATH"
-  when: wpcli_path.rc != 0
+# Install tasks for wp-cli
+# TODO: transform to more idiomatic ansible
+- name: Download wp-cli
+  when: install_wp
+  become: true
+  become_method: sudo
+  shell: "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+
+- name: add exec privs to wp-cli.phar
+  when: install_wp
+  become: true
+  become_method: sudo
+  shell: "chmod +x wp-cli.phar"
+
+- name: transfer wp-cli.phar to path-accessible directory
+  when: install_wp
+  become: true
+  become_method: sudo
+  shell: "mv wp-cli.phar /usr/local/bin/wp"
 
 - name: Download WordPress core files
   ansible.builtin.command: >
