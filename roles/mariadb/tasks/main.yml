@@ -54,7 +54,9 @@
     state: present
 
 - name: Flush privileges to apply changes
-  shell: "mysql -e 'FLUSH PRIVILEGES;'"
+  become: true
+  become_method: sudo
+  shell: "mysql -u root -e 'FLUSH PRIVILEGES;'"
 
 - name: Let tasks know that mariadb is used in the project
   ansible.builtin.set_fact:
