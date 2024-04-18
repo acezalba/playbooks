@@ -36,19 +36,28 @@
   when: mariadb_ping_result.failed
 
 - name: Create a new database
+  become: true
+  become_method: sudo
   mysql_db:
+    login_unix_socket: /run/mysqld/mysqld.sock
     name: "{{ db_name }}"
     state: present
 
 - name: Create a new user
+  become: true
+  become_method: sudo
   mysql_user:
+    login_unix_socket: /run/mysqld/mysqld.sock
     name: "{{ db_user }}"
     password: "{{ db_password }}"
     priv: "{{ db_name }}.*:ALL"
     state: present
 
 - name: Grant all privileges on the new database to the user
+  become: true
+  become_method: sudo
   mysql_user:
+    login_unix_socket: /run/mysqld/mysqld.sock
     name: "{{ db_user }}"
     priv: "{{ db_name }}.*:ALL"
     state: present
