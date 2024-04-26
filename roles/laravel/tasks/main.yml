@@ -1,9 +1,8 @@
 ---
-# todo: add support for a composer require chain for installing a variety of require flags for a variety of projects
 - name: Set the laravel version if defined
   when: laravel_version is defined
   ansible.builtin.set_fact:
-    set lvers: "{{ laravel_version }}"
+    lvers: "{{ laravel_version }}"
 
 - name: Create a laravel local development install
   community.general.composer:
@@ -13,6 +12,7 @@
     prefer_dist: true
 
 - name: Install packages using composer require
+  when: composer_packages is defined
   community.general.composer:
     command: require
     arguments: "{{ item }}"
@@ -30,48 +30,48 @@
     regexp: '^(#?\s*)DB_CONNECTION='
     line: 'DB_CONNECTION={{ db_connection }}'
 
-- name: Replace DB_HOST
+- name: Replace DB_HOST in env
   when: not_sqlite
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '^(#?\s*)DB_HOST='
     line: 'DB_HOST={{ db_host }}'
 
-- name: Replace DB_PORT
+- name: Replace DB_PORT in env
   when: not_sqlite
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '(#?\s*)DB_PORT='
     line: 'DB_PORT={{ db_port }}'
 
-- name: Replace DB_DATABASE
+- name: Replace DB_DATABASE in env
   when: not_sqlite
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '(#?\s*)DB_DATABASE='
     line: 'DB_DATABASE={{ db_name }}'
 
-- name: Replace DB_USERNAME
+- name: Replace DB_USERNAME in env
   when: not_sqlite
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '(#?\s*)DB_USERNAME='
     line: 'DB_USERNAME={{ db_user }}'
 
-- name: Replace DB_PASSWORD
+- name: Replace DB_PASSWORD in env
   when: not_sqlite
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '(#?\s*)DB_PASSWORD='
     line: 'DB_PASSWORD={{ db_password }}'
 
-- name: Replace APP_NAME
+- name: Replace APP_NAME in env
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '^APP_NAME='
     line: 'APP_NAME={{ project_name_cleaned }}'
 
-- name: Replace APP_URL
+- name: Replace APP_URL in env
   lineinfile:
     path: "{{ project_path.path }}/.env"
     regexp: '^APP_URL='
@@ -103,6 +103,13 @@
     path: "{{ project_path.path }}/.env"
     regexp: '^APP_KEY='
     line: 'APP_KEY={{ app_key }}'
+
+- name: Execute preparatory artisan commands
+  when: artisan_commands is defined
+  ansible.builtin.command: "php artisan {{ item }}"
+  with_items: "{{ artisan_commands }}"
+  args:
+    chdir: "{{ project_path.path }}"
 
 - name: Set directory loaded by the server application
   when: public_project_path is undefined

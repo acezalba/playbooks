@@ -14,14 +14,24 @@
     project_name: laravel_setup_test
     license: MIT
     gitignore: laravel
-    require_breeze: false
-    breeze_ui: blade
+    # for php-fpm and apache user overwrite
     dev_user: ghost
     dev_group: ghost
     # suffix_db must be alphanumeric
     suffix_db: laravel
     # suffix_user must be alphanumeric
     suffix_user: dbadmin
+    # laravel version, up to minor.
+    laravel_version: 
+    # composer dependencies, exec sequentially
+    composer_packages:
+      - laravel/jetstream
+    # artisan, exec sequentially
+    # `key generate` already hardcoded in laravel role
+    # for env overwrite
+    artisan_commands:
+      - jetstream:install inertia
+      - migrate
   roles:
     - common
     - php
