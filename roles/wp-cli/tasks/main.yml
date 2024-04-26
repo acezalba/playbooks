@@ -16,19 +16,19 @@
 # Install tasks for wp-cli
 # TODO: transform to more idiomatic ansible
 - name: Download wp-cli
-  when: install_wp
+  when: install_wp is true
   become: true
   become_method: sudo
   shell: "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
 
 - name: add exec privs to wp-cli.phar
-  when: install_wp
+  when: install_wp is true
   become: true
   become_method: sudo
   shell: "chmod +x wp-cli.phar"
 
 - name: transfer wp-cli.phar to path-accessible directory
-  when: install_wp
+  when: install_wp is true
   become: true
   become_method: sudo
   shell: "mv wp-cli.phar /usr/local/bin/wp"
