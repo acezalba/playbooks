@@ -92,6 +92,9 @@
     line: 'listen = 127.0.0.1:9000'
   notify: Restart php-fpm
 
+# TODO: Add php-fpm value config for wordpress
+# https://jetpack.com/blog/wordpress-php-ini/
+
 - name: Let tasks know that php_fpm is used in the project
   ansible.builtin.set_fact:
     php_fpm_in_project: true

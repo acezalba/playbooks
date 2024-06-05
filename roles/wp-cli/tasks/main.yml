@@ -3,6 +3,9 @@
 # TODO: Incorporate use of the config.yml
 # https://make.wordpress.org/cli/handbook/references/config/
 
+# TODO: Enable Debug Mode in wp-config.php
+# TODO: Disable Caching in wp-config.php
+
 - name: Check if wp is in PATH
   ansible.builtin.command: "which wp"
   register: wp_path
