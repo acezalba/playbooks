@@ -1,0 +1,31 @@
+---
+# on execution, overwrite project_name with
+#
+# ansible-playbook my_playbook.yml --extra-vars "project_name=my_project_name"
+# 
+# Project name is transformed across multiple tasks, 
+# so you need to change this to your preference.
+# Underscore as separator preferred.
+
+- name: Provision a local FreshRSS setup
+  hosts: localhost
+  connection: local
+  vars:
+    project_name: freshrssdev
+    license: MIT
+    gitignore: php
+    dev_user: ghost
+    dev_group: ghost
+    # suffix_db must be alphanumeric
+    suffix_db: frssdb
+    # suffix_user must be alphanumeric
+    suffix_user: dev
+    freshrss_zip: "https://github.com/FreshRSS/FreshRSS/archive/refs/tags/1.24.0.zip"
+  roles:
+    - common
+    - php
+    - php-fpm
+    - mariadb
+    - freshrss
+    - apache
+    - hosts

@@ -1,0 +1,67 @@
+---
+
+- name: Download freshrss to project dir
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: "{{ freshrss_zip }}"
+    dest: "{{ project_path.path }}"
+
+- name: Move contents of extracted dir to project dir
+  block:
+    - name: Find the extracted subdir in the current dir
+      find:
+        paths: "{{ project_path.path }}"
+        file_type: directory
+        recurse: false
+      register: first_subdir_result
+
+    - name: Set fact with the first subdirectory path (if found)
+      set_fact:
+        first_subdir_path: "{{ first_subdir_result.files[0].path }}"
+      when: first_subdir_result.files | length > 0
+
+    - name: Move files/directories recursively
+      shell: "mv {{ first_subdir_path }}/* {{ project_path.path }}"
+
+    - name: Remove original source directory
+      file:
+        path: "{{ first_subdir_path }}"
+        state: absent
+
+- name: Install FreshRSS dependencies
+  become: true
+  become_method: sudo
+  apt:
+    pkg:
+      - php{{ php_vers.stdout }}-curl
+      - php{{ php_vers.stdout }}-dom
+      - php{{ php_vers.stdout }}-xml
+      - php{{ php_vers.stdout }}-gmp
+      - php{{ php_vers.stdout }}-zip
+      - php{{ php_vers.stdout }}-mbstring
+      - php{{ php_vers.stdout }}-intl
+    state: latest
+    update_cache: true
+
+# TODO: Match template file with final postconfig file
+# Template values have to be used via web install atm.
+- name: Setup database values
+  ansible.builtin.template:
+    src: templates/config.custom.php.j2
+    dest: "{{ project_path.path }}/data/config.custom.php"
+
+- name: Set directory loaded by the server application
+  when: public_project_path is undefined
+  ansible.builtin.set_fact:
+    public_project_path: "{{ project_path.path }}/p"
+
+- name: Set directory to symlink the project to
+  when: symlink_project_path is undefined
+  ansible.builtin.set_fact:
+    symlink_project_path: "/var/www/html/{{ project_url }}"
+
+- name: Pass project variable files to a text file
+  when: ansible_connection == 'local'
+  ansible.builtin.template:
+    src: templates/projectconfig.j2
+    dest: "{{ project_path.path }}/projectconfig.txt"
