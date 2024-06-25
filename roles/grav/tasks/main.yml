@@ -1,0 +1,33 @@
+- name: Create a grav local install
+  community.general.composer:
+    command: create-project
+    arguments: "getgrav/grav {{ project_path.path }}"
+    working_dir: "{{ project_path.path }}"
+    prefer_dist: true
+
+- name: Install packages using composer require
+  when: composer_packages is defined
+  ignore_errors: yes
+  community.general.composer:
+    command: require
+    arguments: "{{ item }}"
+    working_dir: "{{ project_path.path }}"
+  with_items: "{{ composer_packages }}"
+
+- name: Install grav plugins
+  when: grav_plugins is defined
+  ignore_errors: yes
+  shell: "bin/gpm -y {{ item }}"
+  with_items: "{{ grav_plugins }}"
+
+# create operations to use when grav admin is installed.
+
+- name: Set directory loaded by the server application
+  when: public_project_path is undefined
+  ansible.builtin.set_fact:
+    public_project_path: "{{ project_path.path }}"
+
+- name: Set directory to symlink the project to
+  when: symlink_project_path is undefined
+  ansible.builtin.set_fact:
+    symlink_project_path: "/var/www/html/{{ project_url }}"

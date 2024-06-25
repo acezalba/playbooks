@@ -1,0 +1,32 @@
+---
+# on execution, overwrite project_name with
+#
+# ansible-playbook my_playbook.yml --extra-vars "project_name=my_project_name"
+# 
+# Project name is transformed across multiple tasks, 
+# so you need to change this to your preference.
+# Underscore as separator preferred.
+
+- name: Provision a Grav Local Project with Hosts and Composer
+  hosts: localhost
+  connection: local
+  vars:
+    project_name: grav_setup
+    license: MIT
+    # gitignore: laravel
+    # for php-fpm and apache user overwrite
+    dev_user: ghost
+    dev_group: ghost
+    # composer dependencies, exec sequentially
+    composer_packages:
+    # Grav plugins
+    grav_plugins:
+  roles:
+    - common
+    - php
+    - php-fpm
+    - npm
+    - composer
+    - grav
+    - apache
+    - hosts
