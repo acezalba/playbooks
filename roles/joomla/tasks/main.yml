@@ -1,0 +1,25 @@
+- name: Download joomla to project dir
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: "{{ joomla_zip }}"
+    dest: "{{ project_path.path }}"
+
+- name: Generate a suggested password
+  ansible.builtin.set_fact:
+    joomla_user_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+
+- name: Pass project variable files to a text file
+  when: ansible_connection == 'local'
+  ansible.builtin.template:
+    src: templates/joomlaprojectconfig.j2
+    dest: "{{ project_path.path }}/projectconfig.txt"
+
+- name: Set directory loaded by the server application
+  when: public_project_path is undefined
+  ansible.builtin.set_fact:
+    public_project_path: "{{ project_path.path }}"
+
+- name: Set directory to symlink the project to
+  when: symlink_project_path is undefined
+  ansible.builtin.set_fact:
+    symlink_project_path: "/var/www/html/{{ project_url }}"
