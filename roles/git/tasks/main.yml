@@ -32,3 +32,5 @@
   args:
     chdir: "{{ project_path.path }}"
 
+# TODO: append generated projectconfig.txt to gitignore
+

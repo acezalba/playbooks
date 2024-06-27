@@ -1,0 +1,37 @@
+# https://www.drupal.org/docs/develop/using-composer/manage-dependencies
+
+- name: Create a drupal local install
+  community.general.composer:
+    command: create-project
+    arguments: "drupal/recommended-project {{ project_path.path }}"
+    working_dir: "{{ project_path.path }}"
+    prefer_dist: true
+
+- name: Install packages using composer require
+  when: composer_packages is defined
+  ignore_errors: yes
+  community.general.composer:
+    command: require
+    arguments: "{{ item }}"
+    working_dir: "{{ project_path.path }}"
+  with_items: "{{ composer_packages }}"
+
+- name: Generate a suggested password
+  ansible.builtin.set_fact:
+    drupal_user_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digit length=30') | lower }}"
+
+- name: Pass project variable files to a text file
+  when: ansible_connection == 'local'
+  ansible.builtin.template:
+    src: templates/drupalprojectconfig.j2
+    dest: "{{ project_path.path }}/projectconfig.txt"
+
+- name: Set directory loaded by the server application
+  when: public_project_path is undefined
+  ansible.builtin.set_fact:
+    public_project_path: "{{ project_path.path }}/web"
+
+- name: Set directory to symlink the project to
+  when: symlink_project_path is undefined
+  ansible.builtin.set_fact:
+    symlink_project_path: "/var/www/html/{{ project_url }}"
