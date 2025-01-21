@@ -17,8 +17,12 @@
   ansible.builtin.apt_repository:
     repo: ppa:ondrej/php
 
-- name: Obtain PHP version
-  ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
-  register: php_vers
-  ignore_errors: true
+- name: Install PHP
+  when: php_path.rc != 0
+  ansible.builtin.apt:
+    name: "php{{ php_vers }}"
+
+# - name: Obtain PHP version
+#   ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
+#   register: php_vers
 
