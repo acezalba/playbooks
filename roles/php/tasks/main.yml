@@ -7,12 +7,13 @@
   ignore_errors: true
 
 - name: Display message if PHP is not found
+  when: php_path.rc != 0
   debug:
     msg: "PHP is not installed or not in PATH"
-  when: php_path.rc != 0
   ignore_errors: true
 
 - name: Install Ondrej Repository
+  when: php_path.rc != 0
   ansible.builtin.apt_repository:
     repo: ppa:ondrej/php
 
