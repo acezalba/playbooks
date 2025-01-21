@@ -10,9 +10,14 @@
   debug:
     msg: "PHP is not installed or not in PATH"
   when: php_path.rc != 0
-  ignore_errors: false
+  ignore_errors: true
+
+- name: Install Ondrej Repository
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
 
 - name: Obtain PHP version
   ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
   register: php_vers
   ignore_errors: true
+
