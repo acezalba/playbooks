@@ -1,4 +1,10 @@
 ---
+# 2025-01-21, 06:06:55 PM
+# By adding an install procedure
+# This task assumes the version
+# to be explicitly declared in a 
+# playbook var.
+
 # Checks
 
 - name: Check if PHP is in PATH
@@ -43,4 +49,3 @@
 # - name: Obtain PHP version
 #   ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
 #   register: php_vers
-
