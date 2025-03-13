@@ -23,7 +23,6 @@
 # #   ansible.builtin.apt_repository:
 # #     repo: ppa:ondrej/php
 
-
 # Personal note: Launchpad may be blocked on
 # network. Might require VPN.
 - name: Install Ondrej Repository
@@ -45,10 +44,16 @@
   become_method: sudo
   ansible.builtin.apt:
     name: "php{{ php_vers }}"
+    state: present
 
 # - name: Obtain PHP version
 #   ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
 #   register: php_vers
 
 - name: Install PHP Modules
-  when: 
+  become: true
+  become_method: sudo
+  ansible.builtin.apt:
+    name: "php{{ php_vers }}-{{ item }}"
+    state: present
+  loop: "{{ php_modules }}"
