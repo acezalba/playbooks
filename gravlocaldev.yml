@@ -13,7 +13,22 @@
   vars:
     project_name: grav_setup
     license: MIT
+    php_vers: 8.3
     # gitignore: laravel
+    php_modules:
+      - curl
+      - ctype
+      - dom
+      - gd
+      - json
+      - mbstring
+      - openssl
+      - session
+      - simplexml
+      - xml
+      - acpu
+      - opcache
+      - yaml
     # for php-fpm and apache user overwrite
     dev_user: ghost
     dev_group: ghost
@@ -29,4 +44,4 @@
     - composer
     - grav
     - apache
-    - hosts
+    - host
