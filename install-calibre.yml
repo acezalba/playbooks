@@ -1,6 +1,5 @@
 - name: Install calibre ebook management software
   hosts: localhost
   connection: local
-  vars:
   roles:
     - calibre
