@@ -1,1 +1,3 @@
 playbooks/testplaybook.yml
+testplaybook.yml
+inventory.ini
