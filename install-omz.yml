@@ -1,0 +1,6 @@
+- name: Install and configure ohmyzsh
+  hosts: localhost
+  connection: local
+  roles:
+    - zsh
+    - ohmyzsh

@@ -1,0 +1,33 @@
+- name: Update apt
+  become: true
+  become_method: sudo
+  apt:
+    update_cache: yes
+
+- name: Install ZSH
+  become: true
+  become_method: sudo
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+
+# This task is for solo config of zsh.
+# Other playbook combos may use a symlinked link
+- name: Copy preliminary zshrc to base dir of current user (non-root)
+  become: false
+  ansible.builtin.template:
+    src: templates/.zshrc
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
+
+- name: Ensure Zsh is the default shell
+  become: true
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /bin/zsh
+
+- name: Inform user to re-login for Zsh to take effect
+  debug:
+    msg: "Zsh has been set as the default shell for {{ ansible_user_id }}. Please log out and back in for the change to take effect."
