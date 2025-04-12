@@ -1,0 +1,7 @@
+- name: Install and configure neovim
+  hosts: localhost
+  connection: local
+  roles:
+    - neovim
+
+# TODO: Add additional roles to guarantee nvim health checks.

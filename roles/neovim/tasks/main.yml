@@ -1,0 +1,23 @@
+- name: Download latest Neovim release
+  shell: "curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz --output /tmp/nvim.tar.gz"
+
+- name: Delete existing Neovim
+  become: true
+  become_method: sudo
+  ansible.builtin.file:
+    path: /opt/nvim
+    state: absent
+
+- name: Extract Neovim binary to opt
+  become: true
+  become_method: sudo
+  ansible.builtin.unarchive:
+    src: /tmp/nvim.tar.gz
+    dest: /opt
+
+# TODO: append a path to an rc file if exists
+# export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+
+# TODO: verify if nvim exists in path
+
+# TOD0: configure nvim init.lua
