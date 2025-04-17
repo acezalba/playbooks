@@ -1,3 +1,16 @@
+- name: Update apt
+  become: true
+  become_method: sudo
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install xclip
+  become: true
+  become_method: sudo
+  ansible.builtin.apt:
+    name: xclip
+    state: present
+
 - name: Download latest Neovim release
   shell: "curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz --output /tmp/nvim.tar.gz"
 
