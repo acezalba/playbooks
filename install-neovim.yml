@@ -4,4 +4,12 @@
   roles:
     - neovim
 
-# TODO: Add additional roles to guarantee nvim health checks.
+# TODO: Dependency task to install xclip or other compatible clipboard providers.
+# TODO: Custom Python3 task setup to configure Python3 provider
+# TODO: Custom Pyenv task to give nvim its own virtualenv
+# TODO: Configure Pyenv with its own separate tasks and use include_tasks method for ansible
+# TODO: Custom Python3 task to install pynvim
+# TODO: Ruby role (Ruby and RVM)
+# TODO: NodeJS role (NVM)
+# TODO: Task for Node:Ext cpan module (Perl Provider)
+# TODO: LazyNvim
