@@ -21,3 +21,8 @@
 # TODO: verify if nvim exists in path
 
 # TOD0: configure nvim init.lua
+- name: Copy init.lua to config folder
+  become: false
+  ansible.builtin.template:
+    src: templates/init.lua.j2
+    dest: "{{ ansible_env.HOME }}/.config/nvim/init.lua"
