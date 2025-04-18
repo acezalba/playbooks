@@ -25,3 +25,6 @@
       - libffi-dev
       - liblzma-dev
     state: present
+
+- name: Install pyenv using the recommended runner
+  shell: "curl -fsSL https://pyenv.run | bash"
