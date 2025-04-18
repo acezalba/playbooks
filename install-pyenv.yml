@@ -1,0 +1,5 @@
+- name: Install pyenv on system
+  hosts: localhost
+  connection: local
+  roles:
+    - pyenv
