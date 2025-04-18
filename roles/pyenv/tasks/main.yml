@@ -28,3 +28,6 @@
 
 - name: Install pyenv using the recommended runner
   shell: "curl -fsSL https://pyenv.run | bash"
+
+# TODO: Add pyenv shims for shells, but first create a shell rc management playbook.
+# https://github.com/pyenv/pyenv/?tab=readme-ov-file#b-set-up-your-shell-environment-for-pyenv
