@@ -1,0 +1,11 @@
+- name: Make zsh/omz ansible friendly
+  hosts: localhost
+  connection: local
+  roles:
+    - zsh
+    - ohmyzsh
+    - zsh-custom
+
+# This is a playbook to make zsh config files
+# ansible friendly. It consists of a home zshrc/zshenv file
+# and config files located in .config/shell-files
