@@ -1,22 +1,26 @@
+- name: Check if .zshrc already exists
+  stat:
+    path: "{{ ansible_user_dir }}/.zshrc"
+  register: zshrc_exists
+
 - name: Backup existing .zshrc if it exists
-  copy:
+  ansible.builtin.copy:
     src: "{{ ansible_user_dir }}/.zshrc"
     dest: "{{ ansible_user_dir }}/.zshrc.backup.{{ ansible_date_time.iso8601 }}"
     remote_src: true
-  when: ansible_user_dir is defined and lookup('ansible.builtin.fileglob', '{{ ansible_user_dir }}/.zshrc', errors='ignore')
+  when: zshrc_exists == true
   ignore_errors: true
 
 - name: Copy templated .zshrc to user home
-  template:
+  ansible.builtin.template:
     src: templates/zshrc.j2
     dest: "{{ ansible_user_dir }}/.zshrc"
     mode: '0644'
 
 - name: Copy modular zsh config directory
-  copy:
+  ansible.builtin.copy:
     src: templates/zsh/
     dest: "{{ ansible_user_dir }}/.config/shells/zsh/"
     mode: '0755'
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-  force: yes
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
