@@ -1,5 +1,7 @@
 # If a zshrc exists in root, backup it.
 
+# Set directory vars to expose to other playbooks
+
 # dump your custom zshrc and zshenv into the home folder
 
 # dump your custom shell directory into a config folder
