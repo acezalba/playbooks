@@ -4,19 +4,11 @@ source_if_exists () {
     fi
 }
 
-
-# ZSH-Custom
-# If you see this post, this means that
-# Your zsh installation is ansible-managed.
-# Each role, when necessary, is encouraged to have their
-# specific shell files configs, separated into
-# PATHS, ALIASES, AND CONFIG
-
 export CONFIG_DIR="$HOME/.config/shells/zsh"
 export PATH_DIR="$CONFIG_DIR/path"
 export ALIASES_DIR="$CONFIG_DIR/config"
 export CONFIG_DIR="$CONFIG_DIR/aliases"
 
-source_if_exists $CONFIG_DIR/paths.zsh
-source_if_exists $CONFIG_DIR/aliases.zsh
+source_if_exists $CONFIG_DIR/path.zsh
 source_if_exists $CONFIG_DIR/config.zsh
+source_if_exists $CONFIG_DIR/aliases.zsh
