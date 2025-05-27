@@ -10,4 +10,4 @@
 
 # This is a playbook to make zsh config files
 # ansible friendly. It consists of a home zshrc/zshenv file
-# and config files located in .config/shell-files
+# and config files located in .config/shell-filesshe
