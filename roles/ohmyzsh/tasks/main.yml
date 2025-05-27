@@ -1,4 +1,10 @@
+- name: Check if Oh My Zsh is already installed
+  stat:
+    path: "{{ ansible_user_dir }}/.oh-my-zsh"
+  register: ohmyzsh_dir
+
 - name: Download Oh My Zsh install script as current user
+  when: ohmyzsh_dir.stat.exists == false
   become: false
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
@@ -6,15 +12,27 @@
     mode: '0755'
 
 - name: Run Oh My Zsh install script
+  when: ohmyzsh_dir.stat.exists == false
   shell: sh /tmp/install_ohmyzsh.sh --unattended
   args:
     creates: "{{ ansible_env.HOME }}/.oh-my-zsh"
 
 - name: Copy OMZ zshrc to base dir of current user (non-root)
+  when: modular_config == false
   become: false
   ansible.builtin.template:
     src: templates/.zshrc
     dest: "{{ ansible_env.HOME }}/.zshrc"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
+
+- name: Copy OMZ modular config file to config dir
+  when: modular_config == true
+  become: false
+  ansible.builtin.template:
+    src: templates/omz.zsh
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/omz.zsh"
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
     mode: '0644'
