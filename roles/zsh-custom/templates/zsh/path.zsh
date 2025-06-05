@@ -4,6 +4,8 @@ if [ -r /etc/environment ]; then
 fi
 
 # Source all enabled path snippets (via symlinks)
-for file in "$HOME/.config/shells/zsh/path/"*.zsh; do
-  [ -f "$file" ] && source "$file"
+setopt nullglob
+for file in "$HOME/.config/shells/zsh/path/enabled"/*.zsh; do
+  [ -f "$file" ] && source_if_exists "$file"
 done
+unsetopt nullglob
