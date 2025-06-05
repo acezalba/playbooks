@@ -4,11 +4,7 @@ source_if_exists () {
     fi
 }
 
-export CONFIG_DIR="$HOME/.config/shells/zsh"
-export PATH_DIR="$CONFIG_DIR/path"
-export ALIASES_DIR="$CONFIG_DIR/config"
-export CONFIG_DIR="$CONFIG_DIR/aliases"
-
-source_if_exists $CONFIG_DIR/path.zsh
-source_if_exists $CONFIG_DIR/config.zsh
-source_if_exists $CONFIG_DIR/aliases.zsh
+export CORE_DIR="$HOME/.config/shells/zsh"
+source_if_exists $CORE_DIR/path.zsh
+source_if_exists $CORE_DIR/config.zsh
+source_if_exists $CORE_DIR/aliases.zsh
