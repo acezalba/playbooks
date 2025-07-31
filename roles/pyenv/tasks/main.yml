@@ -31,3 +31,12 @@
 
 # TODO: Add pyenv shims for shells, but first create a shell rc management playbook.
 # https://github.com/pyenv/pyenv/?tab=readme-ov-file#b-set-up-your-shell-environment-for-pyenv
+
+# Below is temporary, improve it.
+# TODO: Add check that the .config-zsh-custom was run on system
+# Maybe add an empty hidden file in root as a validation?
+- name: Add pyenv shell config to config folder in zsh.
+  ansible.builtin.template:
+    src: templates/pyenv.zsh.j2
+    dest: "{{ ansible_user_dir }}/.config/shells/zsh/config/pyenv.zsh"
+    mode: '0644'
