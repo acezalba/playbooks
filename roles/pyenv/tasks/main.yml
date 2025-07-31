@@ -27,6 +27,7 @@
     state: present
 
 - name: Install pyenv using the recommended runner
+  become: false
   shell: "curl -fsSL https://pyenv.run | bash"
 
 # TODO: Add pyenv shims for shells, but first create a shell rc management playbook.
@@ -36,6 +37,7 @@
 # TODO: Add check that the .config-zsh-custom was run on system
 # Maybe add an empty hidden file in root as a validation?
 - name: Add pyenv shell config to config folder in zsh.
+  become: false
   ansible.builtin.template:
     src: templates/pyenv.zsh.j2
     dest: "{{ ansible_user_dir }}/.config/shells/zsh/config/pyenv.zsh"
