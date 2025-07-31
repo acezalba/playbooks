@@ -11,3 +11,9 @@
 # This is a playbook to make zsh config files
 # ansible friendly. It consists of a home zshrc/zshenv file
 # and config files located in .config/shell-filesshe
+
+# Note
+# Behavior for the paths director is:
+# Add path file to $HOME/.config/shells/zsh/available
+# Symlink to $HOME/.config/shells/zsh/enabled
+# Delete symlink only in errors.
