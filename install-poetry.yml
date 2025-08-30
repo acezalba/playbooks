@@ -1,0 +1,5 @@
+- name: Install poetry on system
+  hosts: localhost
+  connection: local
+  roles:
+    - poetry
