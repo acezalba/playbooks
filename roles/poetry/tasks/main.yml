@@ -1,20 +1,41 @@
 - name: Install poetry using official installer
   become: false
-  ansible.builtin.command: "curl -sSL https://install.python-poetry.org | python3 -"
+  ansible.builtin.shell: "curl -sSL https://install.python-poetry.org | python3 -"
 
-- name: Create folder for ZSH Autocompletions
+- name: Add poetry path configurations
+  when: modular_config == true
   become: false
-  ansible.builtin.command: "mkdir $ZSH_CUSTOM/plugins/poetry"
+  ansible.builtin.template:
+    src: templates/path.j2
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/available/dotlocal-bin.zsh"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
 
-- name: Generate ZSH Autocompletions
+- name: Expose poetry exec as available
+  when: modular_config == true
   become: false
-  ansible.builtin.command: "poetry completions zsh > $ZSH_CUSTOM/plugins/poetry/_poetry"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.config/shells/zsh/path/available/dotlocal-bin.zsh"
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/enabled/dotlocal-bin.zsh"
+    state: link
+
+- name: Ensure poetry plugin dir exists
+  become: false
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/poetry"
+    state: directory
+    mode: '0755'
+
+- name: Install Poetry zsh completions
+  become: false
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.local/bin/poetry completions zsh > {{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/poetry/_poetry"
 
 - name: Add poetry shell configurations
   when: modular_config == true
   become: false
   ansible.builtin.template:
-    src: templates/poetry.zsh
+    src: templates/config.j2
     dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/poetry.zsh"
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
