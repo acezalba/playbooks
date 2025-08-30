@@ -1,1 +1,17 @@
-# This is the initial file.
+- name: Add nvm path configurations
+  when: modular_config == true
+  become: false
+  ansible.builtin.template:
+    src: templates/path.j2
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/available/nvm.zsh"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
+
+- name: Expose nvm exec as available
+  when: modular_config == true
+  become: false
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.config/shells/zsh/path/available/nvm.zsh"
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/enabled/nvm.zsh"
+    state: link
