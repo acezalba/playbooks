@@ -1,1 +1,6 @@
-add git playbook with global gitignore template
+x add git playbook with global gitignore template
+add mariadb install playbook; use user-configured port
+add mysql install playbook; use user-configured port
+add php install playbook
+add composer install playbook
+add grav install playbook
