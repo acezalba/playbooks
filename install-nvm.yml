@@ -8,3 +8,10 @@
 
 # Current state of this playbook only installs nvm
 # But does not set and activate node.
+# This is similar to pyenv.
+
+# In future configurations, if you must
+# Incorporate pyenv or nvm resources
+# to install scripts, you need to be more context-aware
+# and expand commands to their version manager-specific
+# locations. Use variables and built-in ansible_env expansions
