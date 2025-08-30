@@ -1,0 +1,2 @@
+nvm_version: v0.40.3
+nvm_url: https://raw.githubusercontent.com/nvm-sh/nvm/{{nvm_version}}/install.sh
