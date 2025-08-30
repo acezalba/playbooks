@@ -1,0 +1,7 @@
+- name: Install Node Version Manager and Node in system
+  hosts: localhost
+  connection: local
+  roles:
+    - nvm
+  vars:
+    modular_config: true
