@@ -1,5 +1,6 @@
 - name: Install poetry on system
   hosts: localhost
   connection: local
+  modular_config: true
   roles:
     - poetry
