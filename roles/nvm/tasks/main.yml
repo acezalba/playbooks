@@ -15,3 +15,7 @@
     src: "{{ ansible_env.HOME }}/.config/shells/zsh/path/available/nvm.zsh"
     dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/enabled/nvm.zsh"
     state: link
+
+- name: Install nvm using official installer
+  become: false
+  ansible.builtin.shell: "curl -sSL {{ nvm_url }} | bash -"
