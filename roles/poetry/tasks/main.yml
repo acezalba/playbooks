@@ -1,0 +1,21 @@
+- name: Install poetry using official installer
+  become: false
+  ansible.builtin.command: "curl -sSL https://install.python-poetry.org | python3 -"
+
+- name: Create folder for ZSH Autocompletions
+  become: false
+  ansible.builtin.command: "mkdir $ZSH_CUSTOM/plugins/poetry"
+
+- name: Generate ZSH Autocompletions
+  become: false
+  ansible.builtin.command: "poetry completions zsh > $ZSH_CUSTOM/plugins/poetry/_poetry"
+
+- name: Add poetry shell configurations
+  when: modular_config == true
+  become: false
+  ansible.builtin.template:
+    src: templates/poetry.zsh
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/poetry.zsh"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
