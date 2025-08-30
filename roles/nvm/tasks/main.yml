@@ -16,6 +16,22 @@
     dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/enabled/nvm.zsh"
     state: link
 
-- name: Install nvm using official installer
+- name: Install NVM via git (no rc file mutation)
+  ansible.builtin.git:
+    repo: "https://github.com/nvm-sh/nvm.git"
+    dest: "{{ ansible_env.HOME }}/.nvm"
+    version: "v0.40.3"     
+    update: yes            
+    force: no              
+    depth: 1               
+    accept_hostkey: yes    
+
+- name: Add nvm shell configurations
+  when: modular_config == true
   become: false
-  ansible.builtin.shell: "curl -sSL {{ nvm_url }} | bash -"
+  ansible.builtin.template:
+    src: templates/config.j2
+    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/nvm.zsh"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
