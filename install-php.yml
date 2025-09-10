@@ -1,0 +1,12 @@
+- name: Install PHP on system using the Ondrej Repository
+  hosts: localhost
+  connection: local
+  roles:
+    - php
+  vars:
+    modular_config: true
+    php_version: 8.3
+
+# TODO:
+# - An install method that does not use Ondrej
+# - php.ini modifier and template
