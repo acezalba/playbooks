@@ -18,11 +18,6 @@
     msg: "PHP is not installed or not in PATH"
   ignore_errors: true
 
-# # - name: Install Ondrej Repository
-# #   when: php_path.rc != 0
-# #   ansible.builtin.apt_repository:
-# #     repo: ppa:ondrej/php
-
 # Personal note: Launchpad may be blocked on
 # network. Might require VPN.
 - name: Install Ondrej Repository
@@ -43,17 +38,13 @@
   become: true
   become_method: sudo
   ansible.builtin.apt:
-    name: "php{{ php_vers }}"
+    name: "php{{ php_version }}"
     state: present
-
-# - name: Obtain PHP version
-#   ansible.builtin.shell: "php -v | head -n 1 | cut -d \" \" -f 2 | cut -f1-2 -d\".\""
-#   register: php_vers
 
 - name: Install PHP Modules
   become: true
   become_method: sudo
   ansible.builtin.apt:
-    name: "php{{ php_vers }}-{{ item }}"
+    name: "php{{ php_version }}-{{ item }}"
     state: present
   loop: "{{ php_modules }}"

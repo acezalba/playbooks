@@ -6,7 +6,10 @@
   vars:
     modular_config: true
     php_version: 8.3
+    # For the modules, only use the keywords. The task must handle the actual naming.
+    php_modules: null
 
 # TODO:
 # - An install method that does not use Ondrej
 # - php.ini modifier and template
+
