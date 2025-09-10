@@ -12,4 +12,4 @@
 # TODO:
 # - An install method that does not use Ondrej
 # - php.ini modifier and template
-
+# - Skip only if declared PHP version exists on system (must parse php --version output).
