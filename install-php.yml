@@ -5,7 +5,7 @@
     - php
   vars:
     modular_config: true
-    php_version: 8.3
+    php_version: 8.4
     # For the modules, only use the keywords. The task must handle the actual naming.
     php_modules: null
 
