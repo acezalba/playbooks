@@ -7,5 +7,7 @@
   vars:
     modular_config: true
     php_version: 8.4
+    # For composer_version, null is standin for latest.
+    composer_version: null
     # For the modules, only use the keywords. The task must handle the actual naming.
     php_modules: []

@@ -10,3 +10,8 @@
     msg: "Composer is not installed or not in PATH"
   when: composer_path.rc != 0
   ignore_errors: false
+
+- name: Install Composer globally
+  become: true
+  become_method: sudo
+  ansible.builtin.script: "files/install-composer.sh {{ composer_version | default('') }}"
