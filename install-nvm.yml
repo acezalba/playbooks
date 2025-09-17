@@ -5,6 +5,7 @@
     - nvm
   vars:
     modular_config: true
+    node_version: node
 
 # Current state of this playbook only installs nvm
 # But does not set and activate node.
