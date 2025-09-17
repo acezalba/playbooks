@@ -2,13 +2,15 @@
   hosts: localhost
   connection: local
   roles:
-    - node
     - npm
   vars:
     modular_config: true
-    node_modules: []
-    # 'Node' is the alias for the latest version.
     node_version: node
+    node_modules: []
+    project_name: null
+    project_directory_name: null
+    project_directory: null
+
 
 # This is a playbook to setup node-exclusive settings
 # And functionality in node.

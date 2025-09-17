@@ -18,22 +18,30 @@
 #     dest: "{{ ansible_env.HOME }}/.config/shells/zsh/path/enabled/nvm.zsh"
 #     state: link
 
-- name: Install NVM via git
-  ansible.builtin.git:
-    repo: "{{ nvm_git_url }}"
-    dest: "{{ ansible_env.HOME }}/.nvm"
-    version: "{{ nvm_version }}"
-    update: yes            
-    force: no              
-    depth: 1               
-    accept_hostkey: yes    
+# - name: Install NVM via git
+#   ansible.builtin.git:
+#     repo: "{{ nvm_git_url }}"
+#     dest: "{{ ansible_env.HOME }}/.nvm"
+#     version: "{{ nvm_version }}"
+#     update: yes            
+#     force: no              
+#     depth: 1               
+#     accept_hostkey: yes    
 
-- name: Add nvm shell configurations
-  when: modular_config == true
+# - name: Add nvm shell configurations
+#   when: modular_config == true
+#   become: false
+#   ansible.builtin.template:
+#     src: templates/config.j2
+#     dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/nvm.zsh"
+#     owner: "{{ ansible_user_id }}"
+#     group: "{{ ansible_user_id }}"
+#     mode: '0644'
+
+- name: Install node in system
   become: false
-  ansible.builtin.template:
-    src: templates/config.j2
-    dest: "{{ ansible_env.HOME }}/.config/shells/zsh/config/nvm.zsh"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0644'
+  ansible.builtin.command: "bash {{ ansible_env.HOME }}/.nvm/nvm.sh install {{ node_version }}"
+
+- name: Use project node
+  become: false
+  ansible.builtin.command: "bash {{ ansible_env.HOME }}/.nvm/nvm.sh use {{ node_version }}"
