@@ -3,6 +3,7 @@
   connection: local
   roles:
     - node
+    - npm
   vars:
     modular_config: true
     node_modules: []
