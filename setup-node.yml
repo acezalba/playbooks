@@ -1,0 +1,19 @@
+- name: Install Node Version Manager and Node in system
+  hosts: localhost
+  connection: local
+  roles:
+    - node
+  vars:
+    modular_config: true
+    node_modules: []
+    # 'Node' is the alias for the latest version.
+    node_version: node
+
+# This is a playbook to setup node-exclusive settings
+# And functionality in node.
+# Install tasks for an interpreter (node/python)
+# Should be joined with the version manager
+# Responsible for it.
+# Ideally functionality in the interpreter playbook
+# Should cohere with the functionality in the
+# Version manager playbook.
