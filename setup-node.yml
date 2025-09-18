@@ -1,12 +1,13 @@
-- name: Install Node Version Manager and Node in system
+- name: Setup Node in System
   hosts: localhost
   connection: local
   roles:
     - npm
   vars:
     modular_config: true
-    node_version: node
+    node_version: "node"
     node_modules: []
+    node_modules_mode: "global"
     project_name: null
     project_directory_name: null
     project_directory: null
