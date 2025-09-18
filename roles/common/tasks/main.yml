@@ -26,7 +26,15 @@
   no_log: true
 
 - name: Create a folder in the current working directory
+  when: project_directory is null
   ansible.builtin.file:
     path: "{{ current_path }}/{{ project_name_cleaned }}"
+    state: directory
+  register: project_path
+
+- name: Create a folder in the declared project directory
+  when: project_directory not null
+  ansible.builtin.file:
+    path: "{{ project_directory }}/{{ project_name_cleaned }}"
     state: directory
   register: project_path

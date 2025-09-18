@@ -1,27 +1,56 @@
 ---
-
-- name: Check if tools are present
-  tags:
-    - checks
+- name: Verify npm and npx are installed
+  tags: [checks]
   block:
-  - name: Check if npm is in PATH
-    ansible.builtin.command: "which npm"
-    register: npm_path
-    ignore_errors: true
+    - name: Check if npm is available
+      ansible.builtin.command: "command -v npm"
+      register: npm_check
+      changed_when: false
+      failed_when: npm_check.rc != 0
 
-  - name: Display message if npm is not found
-    debug:
-      msg: "npm is not installed or not in PATH"
-    when: npm_path.rc != 0
-    ignore_errors: false
+    - name: Check if npx is available
+      ansible.builtin.command: "command -v npx"
+      register: npx_check
+      changed_when: false
+      failed_when: npx_check.rc != 0
 
-  - name: Check if npx is in PATH
-    ansible.builtin.command: "which npx"
-    register: npx_path
-    ignore_errors: true
+- name: Initialize Node project
+  tags: [setup, project]
+  when:
+    - project_name is defined
+    - project_directory is defined
+    - project_name | length > 0
+    - project_directory | length > 0
+  block:
+    - name: Ensure project directory exists
+      ansible.builtin.file:
+        path: "{{ project_path }}"
+        state: directory
 
-  - name: Display message if npx is not found
-    debug:
-      msg: "npx is not installed or not in PATH"
-    when: npx_path.rc != 0
-    ignore_errors: false
+    - name: Initialize npm project
+      ansible.builtin.command: "{{ npm_check.stdout }} init -w {{ project_path }}"
+      args:
+        chdir: "{{ project_path }}"
+
+- name: Install Node dependencies
+  tags: [setup, dependencies]
+  when: npm_check.rc == 0
+  block:
+
+    - name: Install global Node modules
+      when: node_global_modules is defined and node_global_modules | length > 0
+      tags: [global]
+      loop: "{{ node_global_modules }}"
+      ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} --global"
+
+    - name: Install development Node modules
+      when: node_dev_modules is defined and node_dev_modules | length > 0
+      tags: [development, project]
+      loop: "{{ node_dev_modules }}"
+      ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} --save-dev -w {{ project_path }}"
+
+    - name: Install project Node modules
+      when: node_modules is defined and node_modules | length > 0
+      tags: [project]
+      loop: "{{ node_modules }}"
+      ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} -w {{ project_path }}"

@@ -2,15 +2,19 @@
   hosts: localhost
   connection: local
   roles:
+    - common
     - npm
   vars:
     modular_config: true
     node_version: "node"
     node_modules: []
-    node_modules_mode: "global"
+    node_dev_modules: []
+    node_global_modules: []
+    # transform project name in the common role for dir name
     project_name: null
-    project_directory_name: null
+    # must be absolute path, without project_dir_name
     project_directory: null
+    project_mode: "development"
 
 
 # This is a playbook to setup node-exclusive settings
