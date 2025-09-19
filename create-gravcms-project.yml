@@ -14,7 +14,7 @@
     project_name: grav_setup
     project_directory:
     license: MIT
-    php_vers: 8.3
+    php_vers: 8.4
     # gitignore: laravel
     php_modules:
       - curl
