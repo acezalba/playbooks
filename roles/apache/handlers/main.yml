@@ -1,9 +1,8 @@
 ---
-handlers:
-  - name: Restart Apache2
-    ansible.builtin.service:
-      name: "{{ apache_service }}"
-      state: restarted
-    vars:
-      apache_service: "{{ 'apache2' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
-    become: true
+- name: Restart Apache2
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: restarted
+  vars:
+    apache_service: "{{ 'apache2' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
+  become: true
