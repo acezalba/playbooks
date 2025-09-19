@@ -1,14 +1,32 @@
 ---
 # TODO: Add no cache directives when connection is local
-- name: Check if Apache2 is running
-  set_fact:
-    apache2_running: "{{ 'apache2' in host_services_facts }}"
+# - name: Check if Apache2 is running
+#   set_fact:
+#     apache2_running: "{{ 'apache2' in host_services_facts }}"
 
-- name: Display message if Apache2 is not found
-  debug:
-    msg: "Apache2 is not running on your host. Check your services"
-  when: apache2_running
-  ignore_errors: false
+# - name: Display message if Apache2 is not found
+#   debug:
+#     msg: "Apache2 is not running on your host. Check your services"
+#   when: apache2_running
+#   ignore_errors: false
+
+- name: Ensure Apache is installed
+  ansible.builtin.package:
+    name: "{{ apache_pkg }}"
+    state: present
+  vars:
+    apache_pkg: "{{ 'apache2' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
+  notify: Restart Apache2
+  become: true
+
+- name: Ensure Apache is started and enabled
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: true
+  vars:
+    apache_service: "{{ 'apache2' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
+  become: true
 
 - name: Change dev apache to current user
   when: ansible_connection == 'local'
