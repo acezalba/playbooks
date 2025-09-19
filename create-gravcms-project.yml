@@ -29,6 +29,8 @@
       - acpu
       - opcache
       - yaml
+    node_modules:
+    node_dev_modules:
     # for php-fpm and apache user overwrite
     dev_user: ghost
     dev_group: ghost
