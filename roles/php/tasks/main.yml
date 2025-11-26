@@ -41,6 +41,7 @@
     name: "php{{ php_version }}"
     state: present
 
+# Reminder: Cross-check listed modules against PPA of ondrej
 - name: Install PHP Modules
   become: true
   become_method: sudo
