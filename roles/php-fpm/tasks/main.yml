@@ -1,7 +1,7 @@
 ---
 - name: Pass php-version to php-fpm service name
   ansible.builtin.set_fact:
-    php_fpm_service: "php{{ php_vers.stdout }}-fpm"
+    php_fpm_service: "php{{ php_version }}-fpm"
 
 # Check if php-fpm is available in the system.
 - name: Check if php-fpm runs on host
@@ -40,7 +40,7 @@
 
 - name: Transform php_fpm_www_conf for use
   ansible.builtin.set_fact:
-    php_fpm_www_conf: "/etc/php/{{ php_vers.stdout }}/fpm/pool.d/www.conf"
+    php_fpm_www_conf: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
 
 # overwrite php-fpm config with current user.
 - name: Change dev php-fpm to current user
