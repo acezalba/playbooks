@@ -39,4 +39,8 @@
   ansible.builtin.file:
     path: "{{ final_project_path }}"
     state: directory
-  register: project_path
+  register: project_path_result
+
+- name: Store project folder path
+  set_fact:
+    project_path: "{{ project_path_result.path }}"
