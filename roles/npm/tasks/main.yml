@@ -3,13 +3,13 @@
   tags: [checks]
   block:
     - name: Check if npm is available
-      ansible.builtin.command: "command -v npm"
+      ansible.builtin.shell: "command -v npm"
       register: npm_check
       changed_when: false
       failed_when: npm_check.rc != 0
 
     - name: Check if npx is available
-      ansible.builtin.command: "command -v npx"
+      ansible.builtin.shell: "command -v npx"
       register: npx_check
       changed_when: false
       failed_when: npx_check.rc != 0
@@ -28,10 +28,20 @@
         state: directory
 
     - name: Initialize npm project
-      ansible.builtin.command: "{{ npm_check.stdout }} init -w {{ project_path }}"
+      ansible.builtin.command: >
+        {{ npm_check.stdout }} \
+        init -w {{ project_path }} \ 
+        --include-workspace-root \
+        --yes
       args:
         chdir: "{{ project_path }}"
 
+    - name: Set package name in package.json
+      ansible.builtin.shell: >
+        {{ npm_check.stdout }} pkg set name={{ project_name_cleaned }}
+      args:
+        chdir: "{{ project_path }}"
+      
 - name: Install Node dependencies
   tags: [setup, dependencies]
   when: npm_check.rc == 0
@@ -40,17 +50,23 @@
     - name: Install global Node modules
       when: node_global_modules is defined and node_global_modules | length > 0
       tags: [global]
-      loop: "{{ node_global_modules }}"
+      loop: "{{ node_global_modules | default([]) }}"
       ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} --global"
+      args:
+        chdir: "{{ project_path }}"
 
     - name: Install development Node modules
       when: node_dev_modules is defined and node_dev_modules | length > 0
       tags: [development, project]
-      loop: "{{ node_dev_modules }}"
+      loop: "{{ node_dev_modules | default([]) }}"
       ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} --save-dev -w {{ project_path }}"
+      args:
+        chdir: "{{ project_path }}"
 
     - name: Install project Node modules
       when: node_modules is defined and node_modules | length > 0
       tags: [project]
-      loop: "{{ node_modules }}"
+      loop: "{{ node_modules | default([]) }}"
       ansible.builtin.command: "{{ npm_check.stdout }} install {{ item }} -w {{ project_path }}"
+      args:
+        chdir: "{{ project_path }}"
