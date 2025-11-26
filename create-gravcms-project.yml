@@ -32,8 +32,9 @@
       - apcu
       - opcache
       - yaml
-    node_modules:
-    node_dev_modules:
+    node_global_modules: []
+    node_modules: []
+    node_dev_modules: []
     # for php-fpm and apache user overwrite
     dev_user: ghost
     dev_group: ghost
