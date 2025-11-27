@@ -40,9 +40,9 @@
     dev_user: ghost
     dev_group: ghost
     # composer dependencies, exec sequentially
-    composer_packages:
+    composer_packages: []
     # Grav plugins
-    grav_plugins:
+    grav_plugins: []
   roles:
     - common
     - php
