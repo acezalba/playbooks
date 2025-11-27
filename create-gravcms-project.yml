@@ -32,6 +32,7 @@
       - apcu
       - opcache
       - yaml
+      - zip
     node_global_modules: []
     node_modules: []
     node_dev_modules: []
@@ -46,8 +47,8 @@
     - common
     - php
     - php-fpm
-    - npm
     - composer
     - gravcms
     - apache
     - hosts
+    - npm
