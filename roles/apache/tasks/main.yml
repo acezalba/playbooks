@@ -48,15 +48,30 @@
     line: 'export APACHE_RUN_GROUP={{ dev_group }}'
   notify: Restart Apache2
 
-- name: Disable proxy related modules
+- name: Disable php8.4 modules
   become: true
   become_method: sudo
   community.general.apache2_module:
-    name: "{{ item }}"
+    name: "php{{ php_version }}"
+    identifier: "php_module"
     state: absent
-  with_items:
-    - "php{{ php_vers.stdout }}"
-    - mpm_prefork
+  notify: Restart Apache2
+
+- name: Enable event mod
+  become: true
+  become_method: sudo
+  community.general.apache2_module:
+    name: "mpm_event"
+    state: present
+  notify: Restart Apache2
+
+- name: Disable mpm_prefork modules
+  become: true
+  become_method: sudo
+  community.general.apache2_module:
+    name: "mpm_prefork"
+    identifier: "mpm_prefork_module"
+    state: absent
   notify: Restart Apache2
 
 # SRC: https://github.com/jmferrer/ansible-apache2-reverse-proxy/blob/master/roles/apache-reverse-proxy/tasks/main.yml
